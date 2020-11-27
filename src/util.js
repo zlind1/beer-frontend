@@ -16,3 +16,9 @@ export class LocalStorage {
     window.localStorage.removeItem(key);
   }
 }
+
+export async function fetch(url, options) {
+  const urlBase = window.location.href.match('localhost') ? 'http://localhost:3010'
+    : 'https://zlind-beers.herokuapp.com';
+  return await window.fetch(urlBase+url, options);
+}

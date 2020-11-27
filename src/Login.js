@@ -1,10 +1,11 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { Grid, FormGroup, TextField, Button } from '@material-ui/core';
-import { hash } from './util';
+import { hash, fetch } from './util';
 import { UserContext } from './Context';
 
 class Login extends React.Component {
+  static contextType = UserContext;
   constructor() {
     super();
     this.name = React.createRef();
@@ -17,6 +18,11 @@ class Login extends React.Component {
       usernameError: false,
       passwordError: false
     };
+  }
+  componentDidMount() {
+    if (this.context.getUser() !== null) {
+      this.setState({redirect: '/home'});
+    }
   }
   toggleNewUser = async () => {
     await this.setState({
@@ -39,14 +45,14 @@ class Login extends React.Component {
     };
     await this.setState(errors);
     if (errors.usernameError || errors.passwordError) return;
-    const response = await fetch('http://localhost:3010/v0/login', {
+    const response = await fetch('/v0/login', {
       method: 'POST',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify(user)
     });
     if (response.ok) {
       const data = await response.json();
-      this.setUser(data);
+      this.context.setUser(data);
       this.setState({redirect: '/home'});
     } else {
       if (response.status === 404) {
@@ -71,14 +77,14 @@ class Login extends React.Component {
     };
     await this.setState(errors);
     if (errors.nameError || errors.usernameError || errors.passwordError) return;
-    const response = await fetch('http://localhost:3010/v0/user', {
+    const response = await fetch('/v0/user', {
       method: 'POST',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify(user)
     });
     if (response.ok) {
       const data = await response.json();
-      this.setUser(data);
+      this.context.setUser(data);
       this.setState({redirect: '/home'});
     } else {
       if (response.status === 500) {
@@ -87,13 +93,7 @@ class Login extends React.Component {
     }
   }
   render() {
-    return this.state.redirect !== '' ? <Redirect to={this.state.redirect}/> : <>
-      <UserContext.Consumer>
-        {ctx => {
-          this.setUser = ctx.setUser;
-          if (ctx.getUser() !== null) this.setState({redirect: '/home'});
-        }}
-      </UserContext.Consumer>
+    return this.state.redirect !== '' ? <Redirect to={this.state.redirect}/> : (
       <Grid container>
         <Grid item xs={3}/>
         <Grid item xs={6}>
@@ -124,7 +124,7 @@ class Login extends React.Component {
           </FormGroup>
         </Grid>
       </Grid>
-    </>;
+    );
   }
 }
 

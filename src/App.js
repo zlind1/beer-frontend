@@ -16,7 +16,9 @@ class App extends React.Component{
   }
   getUser = () => {
     if (this.state.user === null) {
-      return LocalStorage.get('user');
+      const user = LocalStorage.get('user');
+      this.setState({user: user});
+      return user;
     } else return this.state.user;
   }
   constructor() {
