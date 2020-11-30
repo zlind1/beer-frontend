@@ -1,23 +1,18 @@
 import sha256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex';
+import Base64 from 'crypto-js/enc-base64';
 
 export function hash(x) {
-  return sha256(x).toString(Hex);
+  return sha256(x).toString(Base64);
 }
 
-export class LocalStorage {
-  static get = (key) => {
-    return JSON.parse(window.localStorage.getItem(key));
-  }
-  static set = (key, val) => {
-    window.localStorage.setItem(key, JSON.stringify(val));
-  }
-  static delete = (key) => {
-    window.localStorage.removeItem(key);
+export class Cookie {
+  static exists = (key) => {
+    return document.cookie.indexOf(key+'=') !== -1;
   }
 }
 
-export async function fetch(url, options) {
+export async function fetch(url, options={}) {
+  options.credentials = 'include';
   const urlBase = window.location.href.match('localhost') ? 'http://localhost:3010'
     : 'https://zlind-beers.herokuapp.com';
   return await window.fetch(urlBase+url, options);

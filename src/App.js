@@ -2,31 +2,17 @@ import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import Login from './Login';
 import Home from './Home';
-import { LocalStorage } from './util';
+import { Cookie } from './util';
 import { UserContext } from './Context';
 
 class App extends React.Component{
-  setUser = (user) => {
-    if (user === null) {
-      LocalStorage.delete('user');
-    } else {
-      LocalStorage.set('user', user);
-    }
-    this.setState({user: user})
-  }
-  getUser = () => {
-    if (this.state.user === null) {
-      const user = LocalStorage.get('user');
-      this.setState({user: user});
-      return user;
-    } else return this.state.user;
+  tokenExists = () => {
+    return Cookie.exists('validToken');
   }
   constructor() {
     super();
     this.state = {
-      user: null,
-      getUser: this.getUser,
-      setUser: this.setUser
+      tokenExists: this.tokenExists
     };
   }
   render() {

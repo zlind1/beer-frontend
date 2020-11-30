@@ -20,7 +20,7 @@ class Login extends React.Component {
     };
   }
   componentDidMount() {
-    if (this.context.getUser() !== null) {
+    if (this.context.tokenExists()) {
       this.setState({redirect: '/home'});
     }
   }
@@ -51,8 +51,6 @@ class Login extends React.Component {
       body: JSON.stringify(user)
     });
     if (response.ok) {
-      const data = await response.json();
-      this.context.setUser(data);
       this.setState({redirect: '/home'});
     } else {
       if (response.status === 404) {
@@ -83,8 +81,6 @@ class Login extends React.Component {
       body: JSON.stringify(user)
     });
     if (response.ok) {
-      const data = await response.json();
-      this.context.setUser(data);
       this.setState({redirect: '/home'});
     } else {
       if (response.status === 500) {
